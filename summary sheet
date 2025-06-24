@@ -1,0 +1,478 @@
+#栈
+#eg1.后缀计算
+stack=[]
+datas=reversed(input().split())
+ops={'+','-','*','/'}
+for data in datas:
+    if data in ops:
+        data1=stack.pop()
+        data2=stack.pop()
+        new=str(eval(data1+data+data2))
+        stack.append(new)
+    else:
+        stack.append(data)
+res=float(stack[0])
+print('%.6f'%res)
+
+#eg2.单调栈
+def next_greater_element(nums):
+    stack=[]
+    res=[-1]*len(nums)
+    for i,val in enumerate(nums):
+        while stack and val>nums[stack[-1]]
+            idx=stack.pop()
+            res[idx]=val
+        stack.append(i)
+    return res
+
+#滑动窗口
+#eg.大小为k的平均值不小于阈值的连续子数组数目
+def subarray_nums(arr,k,threshold):
+    ans=s=0
+    for i,x in enumerate(arr):
+        s+=x
+        if i<k-1 :
+            continue
+        if s >= k*threshold:
+            ans+=1
+        s-=arr[i-k+1]
+    return ans
+
+#树
+class Node:
+    def __init__(self,val):
+        self.val=val
+        self.left=None
+        self.right=None
+#eg1.前序建树
+def build(string):
+    if string[0]=='*':
+        return None
+    node=Node(string[0])
+    i=level=0
+    is_left=True
+    record=False
+    while i<len(string)-1:
+        i+=1
+        if string[i]=='(':
+            level+=1
+            continue
+        if level==1 and not record:
+            start=i
+            record=True
+        elif level==1 and record and is_left:
+            end=i
+            record=False
+            node.left=build(string[start:end])
+            is_left=False
+        elif level==1 and record and not is_left:
+            end=i
+            record=False
+            node.right=build(string[start:end])
+        if string[i]==')':
+            level-=1
+            continue
+    return node
+
+#eg2.多属性node建树
+class Node:
+    def __init__(self,val):
+        self.val=val
+        self.dirs=[]
+        self.files=[]
+def build(arr,index,name='ROOT'):
+    node=Node(name)
+    while index<len(arr):
+        if arr[index][0]=='d':
+            child,index=build(arr,index+1,arr[index])
+            node.dirs.append(child)
+        elif arr[index][0]=='f':
+            node.files.append(arr[index])
+            index+=1
+        elif arr[index][0]==']':
+            index+=1
+            break
+        else:
+            index+=1
+    return node,index
+def traverse(node,res,level):
+    tab='|     '
+    res.append(tab*level+node.val)
+    for di in node.dirs:
+        traverse(di,res,level+1)
+    for file in sorted(node.files):
+        res.append(tab*level+file)
+
+#eg3.huffman
+def build(arr):
+    heapq.heapify(arr)
+    nodes={}
+    for data in arr:
+        nodes[tuple(data[1])]=Node(data[0],data[1])
+    while len(arr)>1:
+        data1=heapq.heappop(arr)
+        data2=heapq.heappop(arr)
+        new=copy.deepcopy(data1[1])
+        new.extend(data2[1])
+        data_new=[data1[0]+data2[0],new]
+        heapq.heappush(arr,data_new)
+
+        tem=[data1,data2]
+        tem.sort(key=cmp_to_key(sorting))
+        node1=nodes[tuple(sorted(tem[0][1]))]
+        node2=nodes[tuple(sorted(tem[1][1]))]
+        nodes[tuple(sorted(data_new[1]))]=Node(data_new[0],data_new[1],node1,node2)
+    key=tuple(sorted(arr[0][1]))
+    node=nodes[key]
+    return node
+
+#eg4.中序/后序建树
+def build(arr):
+    ops= {'or':1,'and':2,'not':3}
+    ops_=['or','and','not']
+    i=level=0
+    record=False
+    ops_level=1
+    stack=[]
+    while i<len(arr):
+        if arr[i]=='(':
+            level+=1
+            i+=1
+            continue
+        if arr[i]==')':
+            level-=1
+        if level==1 and not record:
+            start=i
+            record=True
+        elif level==0 and record:
+            end=i
+            record=False
+            stack.append(build(arr[start:end]))
+            i+=1
+            continue
+        if level==0:
+            if arr[i] in ops_ and ops[arr[i]]>=ops_level and arr[i]!='not':
+                top=stack.pop()
+                stack.append(Node(arr[i],top))
+                ops_level=ops[arr[i]]
+            elif arr[i]=='not':
+                stack.append(Node('not'))
+            elif arr[i] in ops_ and ops[arr[i]]<ops_level:
+                while len(stack)>=2:
+                    top1=stack.pop()
+                    top2=stack.pop()
+                    top2.right=top1
+                    stack.append(top2)
+                stack.append(Node(arr[i],stack.pop()))
+                ops_level=ops[arr[i]]
+            else:
+                stack.append(Node(arr[i]))
+        i+=1
+    while len(stack) >= 2:
+        top1 = stack.pop()
+        top2 = stack.pop()
+        top2.right = top1
+        stack.append(top2)
+    node=stack.pop()
+    return node
+
+#eg5.建立BST
+def insert(node,number):
+    if not node:
+        return Node(number)
+    if number>node.val:
+        node.right=insert(node.right,number)
+        return node
+    elif number<node.val:
+        node.left=insert(node.left,number)
+        return node
+root=None
+for i in []:
+    root=insert(root,i)
+
+#eg6.字典树
+class TrieNode:
+    def __init__(self):
+        self.child={}
+        self.check_end=False
+class Trie:
+    def __init__(self):
+        self.root=TrieNode()
+    def insert_check(self,num):
+        cur_node=self.root
+        for x in num:
+            if x not in cur_node.child:
+                cur_node.child[x]=TrieNode()
+            cur_node=cur_node.child[x]
+            if cur_node.check_end:
+                return False
+        cur_node.check_end=True
+        return len(cur_node.child)==0
+    def check(self,nums):
+        for num in nums:
+            if not self.insert_check(num):
+                return False
+        return True
+
+#图
+#eg1.经典dfs
+dx=[2,2,1,1,-2,-2,-1,-1]
+dy=[1,-1,2,-2,1,-1,2,-2]
+ans=0
+def dfs(length,x,y):
+    global ans
+    if length==n*m:
+        ans+=1
+        return
+    for i in range(8):
+        xx=x+dx[i]
+        yy=y+dy[i]
+        if  0<=yy<=m-1 and 0<=xx<=n-1:
+            if not graph[xx][yy]:
+                graph[xx][yy]=True
+                dfs(length+1,xx,yy)
+                graph[xx][yy]=False
+
+T=int(input())
+for _ in range(T):
+    n,m,x0,y0=map(int,input().split())
+    graph=[[False]*m for _ in range(n)]
+    ans=0
+    graph[x0][y0]=True
+    dfs(1,x0,y0)
+    print(ans)
+
+#eg2.dfs+标记数组判环
+def has_cycle(n, edges):
+    graph = [[] for _ in range(n)]
+    for u, v in edges:
+        graph[u].append(v)
+
+    color = [0] * n
+
+    def dfs(node):
+        if color[node] == 1:
+            return True
+        if color[node] == 2:
+            return False
+
+        color[node] = 1
+        for neighbor in graph[node]:
+            if dfs(neighbor):
+                return True
+        color[node] = 2
+        return False
+
+    for i in range(n):
+        if dfs(i):
+            return "Yes"
+    return "No"
+
+#eg3.dfs+warnsdorff
+def is_valid_move(x, y, board, n):
+    return 0 <= x < n and 0 <= y < n and board[x][y] == -1
+
+def get_degree(x, y, board, n, moves):
+    count = 0
+    for dx, dy in moves:
+        if is_valid_move(x + dx, y + dy, board, n):
+            count += 1
+    return count
+
+def knights_tour_warnsdorff(n, sr, sc):
+    moves = [(2, 1), (1, 2), (-1, 2), (-2, 1),
+             (-2, -1), (-1, -2), (1, -2), (2, -1)]
+    board = [[-1 for _ in range(n)] for _ in range(n)]
+    board[sr][sc] = 0
+    def backtrack(x, y, move_count):
+        if move_count == n * n:
+            return True 
+        next_moves = []
+        for dx, dy in moves:
+            nx, ny = x + dx, y + dy
+            if is_valid_move(nx, ny, board, n):
+                degree = get_degree(nx, ny, board, n, moves)
+                next_moves.append((degree, nx, ny))
+        next_moves.sort()
+        for _, nx, ny in next_moves:
+            board[nx][ny] = move_count
+            if backtrack(nx, ny, move_count + 1):
+                return True
+            board[nx][ny] = -1
+        return False
+    
+    if backtrack(sr, sc, 1):
+        print("success")
+    else:
+        print("fail")
+
+#eg4.bfs
+def build(arr):
+    graph=defaultdict(list)
+    for word in arr:
+        for i in range(len(word)):
+            key=word[:i]+'_'+word[i+1:]
+            graph[key].append(word)
+    graph=dict(graph)
+    return graph
+def bfs(start,end,graph):
+    q=deque([[start]])
+    visited=set(start)
+    while q:
+        cur=q.popleft()
+        now=cur[-1]
+        if now==end:
+            return cur
+        for i in range(len(now)):
+            key=cur[-1][:i]+'_'+cur[-1][i+1:]
+            if key in graph:
+                for neighbor in graph[key]:
+                    if neighbor not in visited:
+                        visited.add(neighbor)
+                        q.append(cur+[neighbor])
+
+#eg5.Kahn
+from collections import deque,defaultdict
+def topological_sort(graph):
+    q=deque()
+    in_degree=defaultdict(int)
+    res=[]
+    for u in graph:
+        for v in graph[u]:
+            in_degree[v]+=1
+    for u in graph:
+        if in_degree[u]==0:
+            q.append(u)
+    while q:
+        cur=q.popleft()
+        res.append(cur)
+        for v in graph[cur]:
+            in_degree[v]-=1
+            if in_degree[v]==0:
+                q.append(v)
+    if len(res)==len(graph):
+        return res
+    else:
+        return None
+
+#eg6.并查集
+def find(x):
+    if parent[x] != x:
+        parent[x] = find(parent[x])
+    return parent[x]
+
+def union(x, y):
+    root_x = find(x)
+    root_y = find(y)
+    if root_x != root_y:
+        parent[root_x] = root_y
+        size[root_y] += size[root_x]
+
+n=int(input())
+parent=list(range(n+1))
+size=[1]*n
+
+#eg7.稠密图dijkstra
+class Solution:
+    def networkDelayTime(self, times: List[List[int]], n: int, k: int) -> int:
+        g = [[inf for _ in range(n)] for _ in range(n)] 
+        for x, y, d in times:
+            g[x - 1][y - 1] = d
+
+        dis = [inf] * n
+        ans = dis[k - 1] = 0
+        done = [False] * n
+        while True:
+            x = -1
+            for i, ok in enumerate(done):
+                if not ok and (x < 0 or dis[i] < dis[x]):
+                    x = i
+            if x < 0:
+                return ans 
+            if dis[x] == inf:  
+                return -1
+            ans = dis[x] 
+            done[x] = True 
+            for y, d in enumerate(g[x]):
+                dis[y] = min(dis[y], dis[x] + d)
+
+#eg8.稀疏图dijkstra_堆优化
+class Solution:
+    def networkDelayTime(self, times: List[List[int]], n: int, k: int) -> int:
+        g = [[] for _ in range(n)] 
+        for x, y, d in times:
+            g[x - 1].append((y - 1, d))
+
+        dis = [inf] * n
+        dis[k - 1] = 0
+        h = [(0, k - 1)]
+        while h:
+            dx, x = heappop(h)
+            if dx > dis[x]:  
+                continue
+            for y, d in g[x]:
+                new_dis = dx + d
+                if new_dis < dis[y]:
+                    dis[y] = new_dis  
+                    heappush(h, (new_dis, y))
+        mx = max(dis)
+        return mx if mx < inf else -1
+
+#eg9.bellman-ford
+def bellman_ford(n,edges,source):
+    Inf=float('inf')
+    dist=[Inf]*n
+    dist[source]=0
+    for _ in range(n-1):
+        updated=False
+        for u,v,w in edges:
+            if dist[u]+w <dist[v]:
+            dist[v]=dist[u]+w
+            updated=True
+        if not updated:
+            break
+    for u,v,w in edges:
+        if dist[u]+w <dist[v]:
+            raise ValueError('Graph contains a negative_weight cycle')
+
+#eg10.最小生成树
+n = len(points)
+        graph = {i: [] for i in range(n)}
+        
+        for i in range(n):
+            for j in range(i + 1, n):
+                xi, yi = points[i]
+                xj, yj = points[j]
+                distance = abs(xi - xj) + abs(yi - yj)
+                graph[i].append((distance, j))
+                graph[j].append((distance, i))
+        
+        visited = {0}
+        heap = graph[0]
+        heapq.heapify(heap)
+        total_cost = 0
+        edges_used = 0
+        
+        while heap and edges_used < n - 1:
+            distance, node = heapq.heappop(heap)
+            if node not in visited:
+                visited.add(node)
+                total_cost += distance
+                edges_used += 1
+                for neighbor_distance, neighbor in graph[node]:
+                    if neighbor not in visited:
+                        heapq.heappush(heap, (neighbor_distance, neighbor))
+        
+        return total_cost
+
+
+
+
+
+
+
+
+
+
+
+
